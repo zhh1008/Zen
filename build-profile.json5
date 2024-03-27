@@ -1,0 +1,41 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "/Users/shuku/.ohos/config/auto_debug_Zen_com.zen_40086000136538570.cer",
+          "storePassword": "0000001BA1BE1D9DDD552BCFAFDD386B25C2C0D68B63EAF1BC2D3B8E60EE6E6B68EC1C3631D37AEC4FF871",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B2EA5C9052DD814A9427903B09B52DA21A1D501A69D4AB71B1A6BBB81135E8F3BDC352E1FDB7627",
+          "profile": "/Users/shuku/.ohos/config/auto_debug_Zen_com.zen_40086000136538570.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/shuku/.ohos/config/auto_debug_Zen_com.zen_40086000136538570.p12"
+        }
+      }
+    ],
+    "compileSdkVersion": 9,
+    "compatibleSdkVersion": 9,
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}
