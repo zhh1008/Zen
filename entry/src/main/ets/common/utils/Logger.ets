@@ -1,5 +1,8 @@
 import hilog from '@ohos.hilog';
 
+
+const LOGGER_PREFIX: string = 'Zen App';
+
 class Logger {
   private domain: number;
   private prefix: string;
@@ -11,7 +14,7 @@ class Logger {
    * @param Prefix Identifies the log tag.
    * @param domain Domain Indicates the service domain, which is a hexadecimal integer ranging from 0x0 to 0xFFFFF.
    */
-  constructor(prefix: string = 'MyApp', domain: number = 0xFF00) {
+  constructor(prefix: string = '', domain: number = 0xFF00) {
     this.prefix = prefix;
     this.domain = domain;
   }
@@ -33,4 +36,4 @@ class Logger {
   }
 }
 
-export default new Logger('HTTPS', 0xFF00)
+export default new Logger(LOGGER_PREFIX, 0xFF00)

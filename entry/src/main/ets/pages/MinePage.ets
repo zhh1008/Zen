@@ -1,11 +1,10 @@
-import router from '@ohos.router';
 import prompt from '@ohos.prompt';
 import { CommonConstants } from '../common/constants/CommonConstants';
 import { CommonTitleBarComponent } from '../view/CommonTitleBarComponent';
-import { MenuComponent } from '../view/MenuComponent';
 import { DrawerLayout } from '../view/DrawerLayoutComponent';
 import { LeftMenuItemData } from '../common/bean/LeftMenuItemData';
-import { httpPostWithToken } from '../common/utils/HttpUtil';
+import preferenceUtils from '../common/utils/PreferencesUtil';
+import { siteApi } from '../api/SiteApi';
 
 /**
  * Personal Center page, displaying personal information and app-related settings.
@@ -19,6 +18,7 @@ export struct MinePage {
   private scroller: Scroller = new Scroller()
   @State dataSource: MyDataSource = new MyDataSource();
   private currentDate: Date = new Date();
+  @State userName: string = "";
 
   @State model: DrawerLayout.Model = new DrawerLayout.Model()
     // 设置左侧边栏DrawerLayout.Type.LEFT 还是右侧边栏DrawerLayout.Type.RIGHT
@@ -26,11 +26,15 @@ export struct MinePage {
       // 设置侧边栏宽度
     .setDrawerWidth(300);
 
-  async aboutToAppear() {
-    console.info('myTest-Result============1=================' + AppStorage.Get("token"));
-    this.dataSource.data = await httpPostWithToken("https://stg.rakuzen-plus.com/api/construction/site", null, AppStorage.Get("token")) as [];
-    console.info('myTest-Result==========2===================' + this.dataSource.data.toString());
+  async loadData(): Promise<void> {
+    let result = await siteApi.site()
+    this.dataSource.data = result.data['siteList'] as []
     this.dataSource.reloadData()
+  }
+
+  async aboutToAppear() {
+    this.userName = (await preferenceUtils.get("userName", "")).toString();
+    this.loadData()
   }
 
   build() {
@@ -42,12 +46,7 @@ export struct MinePage {
           duration: 2000
         });
         // MenuComponent()
-      }, extraCallback:() =>{
-        prompt.showToast({
-          message: '点击更新按钮',
-          duration: 2000
-        });
-      }}})
+      }, extraCallback: () =>this.loadData()}})
       DrawerLayout({
         model: $model,
         drawerView: () => {
@@ -145,7 +144,7 @@ export struct MinePage {
             .fontSize(30)
             .fontWeight(FontWeight.Bold)
 
-          Text(AppStorage.Get("name") + ' 様')
+          Text(this.userName + ' 様')
             .fontSize(20)
             .fontWeight(FontWeight.Normal)
         }
@@ -179,6 +178,7 @@ export struct MinePage {
 
               if (item.title.toString() == 'ログアウト') {
                 this.isLogged = false;
+                preferenceUtils.delete("isLogged")
               }
               prompt.showToast({
                 message: '点击更新按钮',

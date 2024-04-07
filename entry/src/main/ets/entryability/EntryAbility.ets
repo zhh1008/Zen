@@ -3,6 +3,7 @@ import hilog from '@ohos.hilog';
 import UIAbility from '@ohos.app.ability.UIAbility';
 import type Want from '@ohos.app.ability.Want';
 import type window from '@ohos.window';
+import PreferencesUtil from '../common/utils/Preferencesutil';
 
 /**
  * Lift cycle management of Ability.
@@ -10,6 +11,7 @@ import type window from '@ohos.window';
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
+    PreferencesUtil.loadPreference(this.context, "zenPreference")
   }
 
   onDestroy(): void {

@@ -1,8 +1,7 @@
 {
   "src": [
     "pages/HomePage",
-    "pages/RegistrationSuccessPage",
-    "pages/PrivacyPage",
-    "pages/CustomerServicePage"
+    "pages/RegisterPage",
+    "pages/PrivacyPage"
   ]
 }

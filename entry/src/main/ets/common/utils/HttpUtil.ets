@@ -1,15 +1,14 @@
 import http from '@ohos.net.http';
-export default async function httpPost(url: string, bodyData?: string | Object | ArrayBuffer) {
-  if (!url) {
-    return undefined;
-  }
+import preferenceUtils from './PreferencesUtil';
+export default async function httpPost(url: string, data?: any) {
+
   let httpRequest = http.createHttp();
   let options = {
     method: http.RequestMethod.POST,
     header: {
       'Content-Type': 'application/json'
     },
-    extraData: bodyData,
+    extraData: data,
     readTimeout: 60000,
     connectTimeout: 60000
   } as http.HttpRequestOptions;
@@ -47,8 +46,9 @@ export default async function httpPost(url: string, bodyData?: string | Object |
 
 
 
-export async function httpPostWithToken(url: string, body?: any, token?: string) {
+export async function httpPostWithToken(url: string, body?: any) {
   return new Promise(async (resolve, reject) => {
+    const token = (await preferenceUtils.get("token", "")).toString();
     const httpRequest = http.createHttp();
     const options = {
       method: http.RequestMethod.POST,

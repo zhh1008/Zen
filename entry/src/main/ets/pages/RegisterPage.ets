@@ -1,34 +1,19 @@
-import { CommonConstants } from '../common/constants/CommonConstants';
-import deviceInfo from '@ohos.deviceInfo';
 import router from '@ohos.router';
-import preferenceUtil from '../common/utils/PreferencesUtil';
 import promptAction from '@ohos.promptAction';
-import { ApiResult } from '../common/http/ApiResult';
-import { loginApi } from '../api/LoginApi';
-import Logger from '../common/utils/Logger';
+import { CommonConstants } from '../common/constants/CommonConstants';
 
-
+/**
+ * Page shows registration successful.
+ */
+@Entry
 @Component
-export struct LoginPage {
-  @Link isLogged: boolean;
-  @StorageProp('isMinHeight') isMinHeight: boolean = false;
-  @State userName: string = '';
-  @State password: string = '';
+struct RegisterPage {
+  userName: string = '';
+  password: string = '';
+  passwordConfirm: string = '';
   userId1: string = '';
   userId2: string = '';
   userId3: string = '';
-
-  aboutToAppear() {
-    Logger.debug("=========deviceType:" + deviceInfo.deviceType)
-    Logger.debug("=========manufacture:" + deviceInfo.manufacture)
-    Logger.debug("=========brand:" + deviceInfo.brand)
-    Logger.debug("=========osFullName:" + deviceInfo.osFullName)
-    Logger.debug("=========sdkApiVersion:" + deviceInfo.sdkApiVersion)
-    Logger.debug("=========versionId:" + deviceInfo.versionId)
-    Logger.debug("=========udid:" + deviceInfo.udid)
-    Logger.debug("=========hardwareModel:" + deviceInfo.hardwareModel)
-    Logger.debug("=========productSeries:" + deviceInfo.productSeries)
-  }
 
   build() {
     Column() {
@@ -67,10 +52,10 @@ export struct LoginPage {
                 this.userId1 = value;
                 this.userName = this.userId1 + this.userId2 + this.userId3;
                 if (value.length == 3) {
-                  focusControl.requestFocus('userId2')
+                  focusControl.requestFocus('regUserId2')
                 }
               })
-              .id("userId1")
+              .id("regUserId1")
 
             Text('ー')
               .width(10)
@@ -97,12 +82,12 @@ export struct LoginPage {
                 this.userId2 = value;
                 this.userName = this.userId1 + this.userId2 + this.userId3;
                 if (value.length == 4) {
-                  focusControl.requestFocus('userId3')
+                  focusControl.requestFocus('regUserId3')
                 }
               })
-              .id("userId2")
+              .id("regUserId2")
               .onFocus(() => {
-                sendEventByKey("userId2", 10, "")
+                sendEventByKey("regUserId2", 10, "")
               })
 
             Text('ー')
@@ -110,7 +95,7 @@ export struct LoginPage {
               .height($r('app.float.text_input_height'))
               .textAlign(TextAlign.Center)
 
-            TextInput({placeholder:'XXXX'})
+            TextInput({placeholder:'XXX'})
               .width('30%')
               .height($r('app.float.text_input_height'))
               .placeholderColor($r('app.color.text_input_place_holder'))
@@ -118,8 +103,8 @@ export struct LoginPage {
               .fontSize($r('app.float.text_input_font_size'))
               .backgroundColor($r('app.color.login_input_text_background'))
               .padding({ left: $r('app.float.password_padding_left') })
-              .maxLength(4)
               .type(InputType.Number)
+              .maxLength(4)
               .border({
                 width: { bottom: $r('app.float.input_border_width') },
                 color: $r('app.color.input_border_color'),
@@ -130,13 +115,13 @@ export struct LoginPage {
                 this.userId3 = value;
                 this.userName = this.userId1 + this.userId2 + this.userId3;
               })
-              .id("userId3")
+              .id("regUserId3")
               .onFocus(() => {
-                sendEventByKey("userId3", 10, "")
+                sendEventByKey("regUserId3", 10, "")
               })
           }.width('80%')
 
-          Text('パスワード')
+          Text('あなたのパスワード')
             .width('80%')
             .height($r('app.float.register_success_text_height'))
             .textAlign(TextAlign.Start)
@@ -144,7 +129,7 @@ export struct LoginPage {
             .fontColor($r('app.color.register_success_text_font'))
             .margin({ top: $r('app.float.register_success_text_margin_top') })
 
-          TextInput({placeholder: 'パスワード'})
+          TextInput({placeholder: 'あなたのパスワード'})
             .width('80%')
             .height($r('app.float.text_input_height'))
             .placeholderColor($r('app.color.text_input_place_holder'))
@@ -160,20 +145,35 @@ export struct LoginPage {
             })
             .margin({ bottom: $r('app.float.input_margin_bottom') })
             .onChange((value: string) => {
-              this.password = value;
+              this.password = value
             })
 
-          Text('IDまたはパスワードを忘れた方はこちら')
+          Text('あなたのパスワード（確認）')
             .width('80%')
-            .height($r('app.float.jump_mine_page_text_height'))
+            .height($r('app.float.register_success_text_height'))
             .textAlign(TextAlign.Start)
-            .fontSize($r('app.float.jump_text_font_size'))
-            .fontColor($r('app.color.jump_text_font'))
-            .onClick(() => {
-              router.replaceUrl({
-                url: CommonConstants.MINE_PAGE_URL
-              });
-            }).margin({bottom: '10%'})
+            .fontSize($r('app.float.register_success_text_font_size'))
+            .fontColor($r('app.color.register_success_text_font'))
+            .margin({ top: $r('app.float.register_success_text_margin_top') })
+
+          TextInput({placeholder: 'あなたのパスワード（確認）'})
+            .width('80%')
+            .height($r('app.float.text_input_height'))
+            .placeholderColor($r('app.color.text_input_place_holder'))
+            .placeholderFont({ size: $r('app.float.text_input_font_size') })
+            .fontSize($r('app.float.text_input_font_size'))
+            .backgroundColor($r('app.color.login_input_text_background'))
+            .type(InputType.Password)
+            .padding({ left: $r('app.float.password_padding_left') })
+            .border({
+              width: { bottom: $r('app.float.input_border_width') },
+              color: $r('app.color.input_border_color'),
+              radius: $r('app.float.input_border_radius')
+            })
+            .margin({ bottom: $r('app.float.input_margin_bottom') })
+            .onChange((value: string) => {
+              this.passwordConfirm = value
+            })
         }
         .width(CommonConstants.REGISTRATION_PAGE_WIDTH_PERCENT)
         .height(CommonConstants.REGISTRATION_PAGE_HEIGHT_PERCENT)
@@ -181,8 +181,8 @@ export struct LoginPage {
       }
       .layoutWeight(CommonConstants.SCROLL_LAYOUT_WEIGHT)
 
-      Button('ユーザー登録し直しの方はこちら')
-        .width('90%')
+      Button('すでにユーザー登録済の方はこちら')
+        .width("90%")
         .height($r('app.float.login_btn_height'))
         .fontSize($r('app.float.text_input_font_size'))
         .fontWeight(CommonConstants.BUTTON_FONT_WEIGHT)
@@ -192,12 +192,12 @@ export struct LoginPage {
         .backgroundColor($r('app.color.register_btn_clickable'))
         .onClick(() => {
           router.pushUrl({
-            url: CommonConstants.REGISTER_PAGE_URL
+            url: CommonConstants.HOME_PAGE_URL
           });
         }).margin({bottom: 10})
 
-      Button('ログイン')
-        .width('90%')
+      Button('ユーザー登録します')
+        .width("90%")
         .height($r('app.float.login_btn_height'))
         .fontSize($r('app.float.text_input_font_size'))
         .fontWeight(CommonConstants.BUTTON_FONT_WEIGHT)
@@ -206,30 +206,32 @@ export struct LoginPage {
         .fontColor($r('app.color.login_font_normal'))
         .backgroundColor($r('app.color.login_btn_enabled'))
         .onClick(() => {
-          if (!isLoginButtonClickable(this.userName, this.password)) {
+          if (this.userName.length == 0) {
             promptAction.showToast({
-              message: 'ユーザー名またはパスワードを入力してください。',
+              message: 'ユーザーIDを入力してください。',
               duration:5000,
             });
-          } else {
-            loginApi.login(this.userName, this.password).then((result: ApiResult) => {
-              if (result.code == 200) {
-                Logger.info("LoginPage", JSON.stringify(result.data))
-                preferenceUtil.set("token", "Bearer " + result.data.token)
-                preferenceUtil.set("userName", result.data.name)
-                preferenceUtil.set("isLogged", true)
-                this.isLogged = true;
-              } else {
-                promptAction.showToast({
-                  message: 'ユーザー名またはパスワードが不正です。',
-                  duration:5000,
-                });
-              }
-            })
+          } else if (this.password.length == 0) {
+            promptAction.showToast({
+              message: 'パスワードを入力してください。',
+              duration:5000,
+            });
+          } else if (this.passwordConfirm.length == 0) {
+            promptAction.showToast({
+              message: 'パスワード確認を入力してください。',
+              duration:5000,
+            });
+          } else if (this.password != this.passwordConfirm) {
+            promptAction.showToast({
+              message: 'パスワードとパスワード確認不一致です。',
+              duration:5000,
+            });
           }
+
         }).margin({bottom: 10})
     }
   }
+
 
   @Builder Title() {
     Flex() {
@@ -261,7 +263,7 @@ export struct LoginPage {
           right: $r('app.float.image_margin_right')
         })
 
-      Text('ログイン')
+      Text('ラクゼンユーザー登録')
         .fontSize($r('app.float.title_text_size'))
         .fontColor($r('app.color.title'))
         .fontWeight(CommonConstants.TITLE_FONT_WEIGHT)
@@ -270,13 +272,4 @@ export struct LoginPage {
     .width(CommonConstants.FULL_WIDTH_PERCENT)
     .height('40%')
   }
-}
-
-/**
- * Calculate login button clickable by the input of username and password.
- *
- * @return {boolean} isLoginButtonClickable.
- */
-function isLoginButtonClickable(userName: string, password: string): boolean {
-  return userName !== '' && password !== '';
 }

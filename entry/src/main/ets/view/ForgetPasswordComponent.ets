@@ -5,7 +5,7 @@ import { CommonConstants } from '../common/constants/CommonConstants';
  * Component of privacy statement and help.
  */
 @Component
-export struct PrivacyStatementComponent {
+export struct ForgetPasswordComponent {
   build() {
     GridRow({
       columns: {
@@ -38,7 +38,7 @@ export struct PrivacyStatementComponent {
             .textAlign(TextAlign.Center)
             .onClick(() => {
               router.pushUrl({
-                url: CommonConstants.CUSTOMER_SERVICE_PAGE_URL
+                url: CommonConstants.FORGET_PASSWORD_PAGE_URL
               });
             })
 

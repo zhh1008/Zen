@@ -195,7 +195,7 @@ export class CommonConstants {
   /**
    * Registration success page url.
    */
-  static readonly REGISTRATION_SUCCESS_PAGE_URL: string = 'pages/RegistrationSuccessPage';
+  static readonly REGISTER_PAGE_URL: string = 'pages/RegisterPage';
 
   /**
    * Privacy page url.
@@ -205,7 +205,7 @@ export class CommonConstants {
   /**
    * Customer service page url.
    */
-  static readonly CUSTOMER_SERVICE_PAGE_URL: string = 'pages/CustomerServicePage';
+  static readonly FORGET_PASSWORD_PAGE_URL: string = 'pages/ForgetPasswordPage';
 
   /**
    * Percent of the text input.
