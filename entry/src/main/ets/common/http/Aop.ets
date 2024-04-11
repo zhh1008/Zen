@@ -2,7 +2,7 @@ import http from '@ohos.net.http';
 import Logger from '../utils/Logger';
 import { ApiResult } from './ApiResult';
 import { httpUtil } from './HttpUtil';
-import { RequestOptions } from './RequestOptions';
+import { DecodingOptions, RequestOptions } from './RequestOptions';
 type FunParamMapKey = {
   target: Object;
   methodName: string;
@@ -61,7 +61,7 @@ export function Post(url: string) {
   return function (target: any, methodName: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     let URL: string = url;
-    let options: http.HttpRequestOptions = {
+    let options: RequestOptions = {
       extraData:{}
     };
     descriptor.value = async function (...args: any[]) {
@@ -79,7 +79,9 @@ export function Post(url: string) {
             throw new Error(`Invalid parameter type at index ${index}.`)
           }
         } else {
-          if (typeof arg == 'object') {
+          if (arg instanceof DecodingOptions) {
+            options.decodingOptions = arg
+          } else if (typeof arg == 'object') {
             options.extraData = JSON.stringify(arg)
           }
         }
@@ -95,7 +97,6 @@ export function Post(url: string) {
         });
       });
       return await p;
-
     }
   }
 }

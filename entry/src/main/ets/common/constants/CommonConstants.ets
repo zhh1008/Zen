@@ -133,6 +133,16 @@ export class CommonConstants {
   static readonly BUTTON_OFFSET_LG: number = 4;
 
   /**
+   * Current component offset 2 grids.
+   */
+  static readonly OFFSET_TWO: number = 2;
+
+  /**
+   * Flex grow value: 1.
+   */
+  static readonly FLEX_GROW: number = 1;
+
+  /**
    * The break point for page.
    */
   static readonly BREAK_POINT: Array<string> = ['320vp', '600vp', '820vp'];
@@ -206,6 +216,11 @@ export class CommonConstants {
    * Customer service page url.
    */
   static readonly FORGET_PASSWORD_PAGE_URL: string = 'pages/ForgetPasswordPage';
+
+  /**
+   * Mine page url.
+   */
+  static readonly COMPANY_INFO_PAGE_URL: string = 'pages/CompanyInfoPage';
 
   /**
    * Percent of the text input.

@@ -5,6 +5,13 @@ import { DrawerLayout } from '../view/DrawerLayoutComponent';
 import { LeftMenuItemData } from '../common/bean/LeftMenuItemData';
 import preferenceUtils from '../common/utils/PreferencesUtil';
 import { siteApi } from '../api/SiteApi';
+import { imageApi } from '../api/ImageApi';
+import { ApiResult } from '../common/http/ApiResult';
+import image from '@ohos.multimedia.image';
+import Logger from '../common/utils/Logger';
+import { ImageDLRequest } from '../api/request/ImageDLRequest';
+import { DecodingOptions } from '../common/http/RequestOptions';
+import router from '@ohos.router';
 
 /**
  * Personal Center page, displaying personal information and app-related settings.
@@ -28,7 +35,13 @@ export struct MinePage {
 
   async loadData(): Promise<void> {
     let result = await siteApi.site()
-    this.dataSource.data = result.data['siteList'] as []
+    let siteList = result.data['siteList'] as []
+    for (let i = 0; i < siteList.length; i++) {
+      if ((siteList[i]['bldg'] as []).length > 0) {
+        let imgId = siteList[i]['bldg'][0]["siteImgId"]
+        this.dataSource.data.push(new SiteDto(siteList[i]["constrName"], (await this.getImage(imgId))))
+      }
+    }
     this.dataSource.reloadData()
   }
 
@@ -87,16 +100,23 @@ export struct MinePage {
             Grid() {
               LazyForEach(this.dataSource, item => {
                 GridItem() {
-                  Text(item["constrName"])
-                    .fontSize(16)
-                    .fontColor(Color.White)
-                    .backgroundColor(0x007DFF)
-                    .width('100%')
-                    .height('100%')
-                    .textAlign(TextAlign.Center)
-                    .onAppear(()=>{
-                      console.log("myTest:" + item.toString())
+                  Image(item['image'])
+                    .width('100%').height('100%')
+                    .overlay(item["constrName"], {
+                      align: Alignment.BottomStart,
+                      offset: { x: 0, y: -15 }
                     })
+
+                  // Text(item["constrName"])
+                  //   .fontSize(16)
+                  //   .fontColor(Color.Grey)
+                  //   .backgroundColor("#FFFFFF")
+                  //   .width('100%')
+                  //   .height('100%')
+                  //   .textAlign(TextAlign.Center)
+                  //   .onAppear(()=>{
+                  //     console.log("myTest:" + item.toString())
+                  //   })
                 }
                 .height('25%')
               }, item => item)
@@ -110,6 +130,7 @@ export struct MinePage {
           .scrollable(ScrollDirection.Vertical)
           .padding({left:16, right:16})
         }
+        .backgroundColor("#DCDCDC")
         .tabBar(this.TabBuilder('工程', 0, $r('app.media.menu'), $r('app.media.menu')))
 
         TabContent() {
@@ -176,6 +197,12 @@ export struct MinePage {
             }
             .onClick(() => {
 
+              if (item.title.toString() == '情報') {
+                router.replaceUrl({
+                  url: CommonConstants.COMPANY_INFO_PAGE_URL
+                });
+              }
+
               if (item.title.toString() == 'ログアウト') {
                 this.isLogged = false;
                 preferenceUtils.delete("isLogged")
@@ -218,11 +245,45 @@ export struct MinePage {
     // }
     return personalListItems;
   }
+
+
+  async getImage(imageId: string): Promise<image.PixelMap> {
+    if (imageId == '') {
+      return null
+    }
+    let imageDLRequest = new ImageDLRequest(imageId)
+    let options = {
+      alphaType: 0,                     // 透明度
+      editable: false,                  // 是否可编辑
+      pixelFormat: 3,                   // 像素格式
+      scaleMode: 1,                     // 缩略值
+    }
+    const pixelMap = await new Promise<PixelMap>((resolve, reject) => {
+      imageApi.getImage(imageDLRequest, new DecodingOptions(options)).then((imgData) => {
+        resolve(imgData);
+      }).catch((error) => {
+        reject(error);
+      });
+    });
+
+    return pixelMap
+  }
+}
+
+@Observed
+class SiteDto {
+  constrName: string
+  image: image.PixelMap
+
+  constructor(constrName: string, image: image.PixelMap) {
+    this.constrName = constrName;
+    this.image = image;
+  }
 }
 
 class MyDataSource implements IDataSource {
   private listeners: DataChangeListener[] = [];
-  data: any[] = [];
+  data: SiteDto[] = [];
   public totalCount(): number {
     return this.data.length
   }

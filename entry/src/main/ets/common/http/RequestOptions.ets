@@ -3,6 +3,7 @@ export interface RequestOptions {
   method?: RequestMethod;
   extraData?: string|Object|ArrayBuffer;
   queryParams?: Map<string, string>;
+  decodingOptions?: DecodingOptions;
   header?: Object;
 }
 
@@ -15,4 +16,12 @@ export enum RequestMethod {
   DELETE = "DELETE",
   TRACE = "TRACE",
   CONNECT = "CONNECT"
+}
+
+export class DecodingOptions {
+  options?: Object
+
+  constructor(options: Object) {
+    this.options = options
+  }
 }

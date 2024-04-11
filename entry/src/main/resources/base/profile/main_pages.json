@@ -2,6 +2,7 @@
   "src": [
     "pages/HomePage",
     "pages/RegisterPage",
-    "pages/PrivacyPage"
+    "pages/PrivacyPage",
+    "pages/CompanyInfoPage"
   ]
 }

@@ -87,7 +87,9 @@ struct RegisterPage {
               })
               .id("regUserId2")
               .onFocus(() => {
-                sendEventByKey("regUserId2", 10, "")
+                setTimeout(() => {
+                  sendEventByKey("regUserId2", 10, "")
+                }, 100)
               })
 
             Text('ー')
@@ -117,7 +119,9 @@ struct RegisterPage {
               })
               .id("regUserId3")
               .onFocus(() => {
-                sendEventByKey("regUserId3", 10, "")
+                setTimeout(() => {
+                  sendEventByKey("regUserId3", 10, "")
+                }, 100)
               })
           }.width('80%')
 

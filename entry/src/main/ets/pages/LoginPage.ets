@@ -6,6 +6,9 @@ import promptAction from '@ohos.promptAction';
 import { ApiResult } from '../common/http/ApiResult';
 import { loginApi } from '../api/LoginApi';
 import Logger from '../common/utils/Logger';
+import { imageApi } from '../api/ImageApi';
+import { ImageDLRequest } from '../api/request/ImageDLRequest';
+import image from '@ohos.multimedia.image';
 
 
 @Component
@@ -47,7 +50,7 @@ export struct LoginPage {
             .margin({ top: $r('app.float.register_success_text_margin_top') })
 
           Row() {
-            TextInput({placeholder:'XXX'})
+            TextInput({placeholder:'XXX', text:'080'})
               .width('30%')
               .height($r('app.float.text_input_height'))
               .placeholderColor($r('app.color.text_input_place_holder'))
@@ -77,7 +80,7 @@ export struct LoginPage {
               .height($r('app.float.text_input_height'))
               .textAlign(TextAlign.Center)
 
-            TextInput({placeholder:'XXXX'})
+            TextInput({placeholder:'XXXX', text:'0000'})
               .width('30%')
               .height($r('app.float.text_input_height'))
               .placeholderColor($r('app.color.text_input_place_holder'))
@@ -102,7 +105,9 @@ export struct LoginPage {
               })
               .id("userId2")
               .onFocus(() => {
-                sendEventByKey("userId2", 10, "")
+                setTimeout(() => {
+                  sendEventByKey("userId2", 10, "")
+                }, 100)
               })
 
             Text('ー')
@@ -110,7 +115,7 @@ export struct LoginPage {
               .height($r('app.float.text_input_height'))
               .textAlign(TextAlign.Center)
 
-            TextInput({placeholder:'XXXX'})
+            TextInput({placeholder:'XXXX', text:'0001'})
               .width('30%')
               .height($r('app.float.text_input_height'))
               .placeholderColor($r('app.color.text_input_place_holder'))
@@ -132,7 +137,9 @@ export struct LoginPage {
               })
               .id("userId3")
               .onFocus(() => {
-                sendEventByKey("userId3", 10, "")
+                setTimeout(() => {
+                  sendEventByKey("userId3", 10, "")
+                }, 100)
               })
           }.width('80%')
 
@@ -144,7 +151,7 @@ export struct LoginPage {
             .fontColor($r('app.color.register_success_text_font'))
             .margin({ top: $r('app.float.register_success_text_margin_top') })
 
-          TextInput({placeholder: 'パスワード'})
+          TextInput({placeholder: 'パスワード', 'text': "1234"})
             .width('80%')
             .height($r('app.float.text_input_height'))
             .placeholderColor($r('app.color.text_input_place_holder'))
