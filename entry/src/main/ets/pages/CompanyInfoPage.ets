@@ -1,13 +1,40 @@
 
 import router from '@ohos.router'
+import promptAction from '@ohos.promptAction'
 import { CommonConstants } from '../common/constants/CommonConstants'
 import Logger from '../common/utils/Logger'
+import { MediaBean, MediaHelper, MediaOption } from '../helepr/MediaHelper'
+import common from '@ohos.app.ability.common'
 
 @Entry
 @Component
 export struct CompanyInfoPage {
+  @State handlePopup: boolean = false
+  @State mediaBean: MediaBean = new MediaBean();
+  private mediaHelper: MediaHelper = new MediaHelper(getContext());
 
   aboutToAppear() {
+  }
+
+  async handleClick(option: MediaOption) {
+    let mediaBean: MediaBean;
+    switch (option) {
+      case MediaOption.Picture:
+        mediaBean = await this.mediaHelper.selectPicture();
+        break;
+      case MediaOption.File:
+        mediaBean = await this.mediaHelper.selectFile();
+        break;
+      case MediaOption.TakePhoto:
+        mediaBean = await this.mediaHelper.takePhoto(getContext() as common.UIAbilityContext);
+        break;
+      default:
+        break;
+    }
+
+    if (mediaBean) {
+      this.mediaBean = mediaBean;
+    }
   }
 
   build() {
@@ -49,10 +76,15 @@ export struct CompanyInfoPage {
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
                 Text("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
                   .width('80%')
-                  .height($r('app.float.register_success_text_height'))
+                  .height($r('app.float.text_input_height'))
                   .textAlign(TextAlign.Start)
                   .fontSize('20fp')
                   .fontColor($r('app.color.register_success_text_font'))
+                  .backgroundColor("#ffd7d6d6")
+                  .border({
+                    color: $r('app.color.input_border_color'),
+                    radius: 10
+                  })
 
                 Text('代表者電話番号（契約者ID）')
                   .width('80%')
@@ -63,10 +95,15 @@ export struct CompanyInfoPage {
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
                 Text("123456")
                   .width('80%')
-                  .height($r('app.float.register_success_text_height'))
+                  .height($r('app.float.text_input_height'))
                   .textAlign(TextAlign.Start)
                   .fontSize('20fp')
                   .fontColor($r('app.color.register_success_text_font'))
+                  .backgroundColor("#ffd7d6d6")
+                  .border({
+                    color: $r('app.color.input_border_color'),
+                    radius: 10
+                  })
 
                 Text('ラクゼンご契約種別')
                   .width('80%')
@@ -77,10 +114,14 @@ export struct CompanyInfoPage {
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
                 Text("123456")
                   .width('80%')
-                  .height($r('app.float.register_success_text_height'))
+                  .height($r('app.float.text_input_height'))
                   .textAlign(TextAlign.Start)
                   .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
+                  .backgroundColor("#ffd7d6d6")
+                  .border({
+                    color: $r('app.color.input_border_color'),
+                    radius: 10
+                  })
 
                 Text('会社名')
                   .width('80%')
@@ -91,10 +132,14 @@ export struct CompanyInfoPage {
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
                 Text("123456")
                   .width('80%')
-                  .height($r('app.float.register_success_text_height'))
+                  .height($r('app.float.text_input_height'))
                   .textAlign(TextAlign.Start)
                   .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
+                  .backgroundColor("#ffd7d6d6")
+                  .border({
+                    color: $r('app.color.input_border_color'),
+                    radius: 10
+                  })
 
 
                 Text('代表者名')
@@ -106,10 +151,14 @@ export struct CompanyInfoPage {
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
                 Text("123456")
                   .width('80%')
-                  .height($r('app.float.register_success_text_height'))
+                  .height($r('app.float.text_input_height'))
                   .textAlign(TextAlign.Start)
                   .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
+                  .backgroundColor("#ffd7d6d6")
+                  .border({
+                    color: $r('app.color.input_border_color'),
+                    radius: 10
+                  })
 
 
                 Text('会社住所')
@@ -121,10 +170,14 @@ export struct CompanyInfoPage {
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
                 Text("123456")
                   .width('80%')
-                  .height($r('app.float.register_success_text_height'))
+                  .height($r('app.float.text_input_height'))
                   .textAlign(TextAlign.Start)
                   .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
+                  .backgroundColor("#ffd7d6d6")
+                  .border({
+                    color: $r('app.color.input_border_color'),
+                    radius: 10
+                  })
 
 
                 Text('会社電話番号')
@@ -142,12 +195,10 @@ export struct CompanyInfoPage {
                   .fontSize($r('app.float.text_input_font_size'))
                   .backgroundColor($r('app.color.login_input_text_background'))
                   .padding({ left: $r('app.float.password_padding_left') })
-                  .type(InputType.Number)
-                  .maxLength(3)
                   .border({
-                    width: { bottom: $r('app.float.input_border_width') },
+                    width: "1vp",
                     color: $r('app.color.input_border_color'),
-                    radius: $r('app.float.input_border_radius')
+                    radius: 10
                   })
                   .onChange((value: string) => {
                   })
@@ -162,10 +213,14 @@ export struct CompanyInfoPage {
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
                 Text("123456")
                   .width('80%')
-                  .height($r('app.float.register_success_text_height'))
+                  .height($r('app.float.text_input_height'))
                   .textAlign(TextAlign.Start)
                   .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
+                  .backgroundColor("#ffd7d6d6")
+                  .border({
+                    color: $r('app.color.input_border_color'),
+                    radius: 10
+                  })
 
 
                 Text('印影')
@@ -175,12 +230,38 @@ export struct CompanyInfoPage {
                   .fontSize("12fp")
                   .fontColor($r('app.color.register_success_text_font'))
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
-                Text("123456")
-                  .width('80%')
-                  .height($r('app.float.register_success_text_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
+                Image(this.mediaBean.localUrl)
+                  .width(300)
+                  .height(300)
+                  .backgroundColor(Color.Grey)
+                  .onClick(() => {
+                    ActionSheet.show({
+                      title: "",
+                      message: "",
+                      autoCancel: false,
+                      alignment: DialogAlignment.Center,
+                      offset: {dx: 0, dy: -30},
+                      confirm: {
+                        value: 'キャンセル',
+                        action: () => {
+                        }
+                      },
+                      sheets: [
+                        {
+                          title: 'カメラ',
+                          action: () => {
+                            this.handleClick(MediaOption.Picture);
+                          }
+                        },
+                        {
+                          title: '写真ライブラリ',
+                          action: () => {
+                            this.handleClick(MediaOption.TakePhoto);
+                          }
+                        }
+                      ]
+                    })
+                  })
 
 
                 Text('工種')
@@ -190,14 +271,29 @@ export struct CompanyInfoPage {
                   .fontSize("12fp")
                   .fontColor($r('app.color.register_success_text_font'))
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
-                TextArea()
-                  .width('80%')
-                  .height(100)
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .enabled(false)
-
+                Row() {
+                  Row() {
+                    TextArea({text: "任务编辑页由上方的“编辑任务”标题以及返回按钮，主体内容的List配置项和下方的完成按钮组成。任务编辑页面，由Navigation和一个自定义组件TaskDetail构成。自定义组件由List以及其子组件ListItem构成，实现效果如图"})
+                      .width('100%')
+                      .height('auto')
+                      .textAlign(TextAlign.Start)
+                      .fontSize('20fp')
+                      .fontColor($r('app.color.register_success_text_font'))
+                      .backgroundColor("#ffd7d6d6")
+                      .enabled(false)
+                  }
+                  .width("95%")
+                  Blank()
+                    .layoutWeight(1)
+                  Image($r('app.media.right_grey')).width(8).height(16)
+                }
+                .width("80%")
+                .justifyContent(FlexAlign.SpaceBetween)
+                .backgroundColor("#ffd7d6d6")
+                .border({
+                  color: $r('app.color.input_border_color'),
+                  radius: 10
+                })
 
 
                 Text('建設業許可証')
@@ -207,25 +303,22 @@ export struct CompanyInfoPage {
                   .fontSize("12fp")
                   .fontColor($r('app.color.register_success_text_font'))
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
-                TextInput()
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .placeholderColor($r('app.color.text_input_place_holder'))
-                  .placeholderFont({ size: $r('app.float.text_input_font_size') })
-                  .fontSize($r('app.float.text_input_font_size'))
-                  .backgroundColor($r('app.color.login_input_text_background'))
-                  .padding({ left: $r('app.float.password_padding_left') })
-                  .type(InputType.Number)
-                  .maxLength(3)
-                  .border({
-                    width: { bottom: $r('app.float.input_border_width') },
-                    color: $r('app.color.input_border_color'),
-                    radius: $r('app.float.input_border_radius')
-                  })
-                  .onChange((value: string) => {
-                  })
-                  .enabled(false)
-
+                Row() {
+                  Row() {
+                    Text("pppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp").height($r('app.float.text_input_height')).fontSize($r('app.float.text_input_font_size')).fontColor($r('app.color.register_success_text_font'))
+                  }
+                  .width("95%")
+                  Blank()
+                    .layoutWeight(1)
+                  Image($r('app.media.right_grey')).width(8).height(16)
+                }
+                .width("80%")
+                .justifyContent(FlexAlign.SpaceBetween)
+                .backgroundColor("#ffd7d6d6")
+                .border({
+                  color: $r('app.color.input_border_color'),
+                  radius: 10
+                })
 
                 Text('健康保険')
                   .width('80%')
@@ -234,24 +327,22 @@ export struct CompanyInfoPage {
                   .fontSize("12fp")
                   .fontColor($r('app.color.register_success_text_font'))
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
-                TextInput()
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .placeholderColor($r('app.color.text_input_place_holder'))
-                  .placeholderFont({ size: $r('app.float.text_input_font_size') })
-                  .fontSize($r('app.float.text_input_font_size'))
-                  .backgroundColor($r('app.color.login_input_text_background'))
-                  .padding({ left: $r('app.float.password_padding_left') })
-                  .type(InputType.Number)
-                  .maxLength(3)
-                  .border({
-                    width: { bottom: $r('app.float.input_border_width') },
-                    color: $r('app.color.input_border_color'),
-                    radius: $r('app.float.input_border_radius')
-                  })
-                  .onChange((value: string) => {
-                  })
-                  .enabled(false)
+                Row() {
+                  Row() {
+                    Text("任务编辑页由上方的“编辑任务”标题以及返回按钮，主体内容的List配置项和下方的完成按钮组成主体内容的List配置项和下方的完成按钮组成主体内容的List配置项和下方的完成按钮组成").height($r('app.float.text_input_height')).fontSize($r('app.float.text_input_font_size')).fontColor($r('app.color.register_success_text_font'))
+                  }
+                  .width("95%")
+                  Blank()
+                    .layoutWeight(1)
+                  Image($r('app.media.right_grey')).width(8).height(16)
+                }
+                .width("80%")
+                .justifyContent(FlexAlign.SpaceBetween)
+                .backgroundColor("#ffd7d6d6")
+                .border({
+                  color: $r('app.color.input_border_color'),
+                  radius: 10
+                })
 
 
                 Text('厚生年金保険')
@@ -261,24 +352,22 @@ export struct CompanyInfoPage {
                   .fontSize("12fp")
                   .fontColor($r('app.color.register_success_text_font'))
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
-                TextInput()
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .placeholderColor($r('app.color.text_input_place_holder'))
-                  .placeholderFont({ size: $r('app.float.text_input_font_size') })
-                  .fontSize($r('app.float.text_input_font_size'))
-                  .backgroundColor($r('app.color.login_input_text_background'))
-                  .padding({ left: $r('app.float.password_padding_left') })
-                  .type(InputType.Number)
-                  .maxLength(3)
-                  .border({
-                    width: { bottom: $r('app.float.input_border_width') },
-                    color: $r('app.color.input_border_color'),
-                    radius: $r('app.float.input_border_radius')
-                  })
-                  .onChange((value: string) => {
-                  })
-                  .enabled(false)
+                Row() {
+                  Row() {
+                    Text().height($r('app.float.text_input_height')).fontSize($r('app.float.text_input_font_size'))
+                  }
+                  .width("95%")
+                  Blank()
+                    .layoutWeight(1)
+                  Image($r('app.media.right_grey')).width(8).height(16)
+                }
+                .width("80%")
+                .justifyContent(FlexAlign.SpaceBetween)
+                .backgroundColor("#ffd7d6d6")
+                .border({
+                  color: $r('app.color.input_border_color'),
+                  radius: 10
+                })
 
 
                 Text('雇用保険')
@@ -288,24 +377,22 @@ export struct CompanyInfoPage {
                   .fontSize("12fp")
                   .fontColor($r('app.color.register_success_text_font'))
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
-                TextInput()
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .placeholderColor($r('app.color.text_input_place_holder'))
-                  .placeholderFont({ size: $r('app.float.text_input_font_size') })
-                  .fontSize($r('app.float.text_input_font_size'))
-                  .backgroundColor($r('app.color.login_input_text_background'))
-                  .padding({ left: $r('app.float.password_padding_left') })
-                  .type(InputType.Number)
-                  .maxLength(3)
-                  .border({
-                    width: { bottom: $r('app.float.input_border_width') },
-                    color: $r('app.color.input_border_color'),
-                    radius: $r('app.float.input_border_radius')
-                  })
-                  .onChange((value: string) => {
-                  })
-                  .enabled(false)
+                Row() {
+                  Row() {
+                    Text().height($r('app.float.text_input_height')).fontSize($r('app.float.text_input_font_size'))
+                  }
+                  .width("95%")
+                  Blank()
+                    .layoutWeight(1)
+                  Image($r('app.media.right_grey')).width(8).height(16)
+                }
+                .width("80%")
+                .justifyContent(FlexAlign.SpaceBetween)
+                .backgroundColor("#ffd7d6d6")
+                .border({
+                  color: $r('app.color.input_border_color'),
+                  radius: 10
+                })
 
 
                 Text('工事用車輌情報')
@@ -315,103 +402,22 @@ export struct CompanyInfoPage {
                   .fontSize("12fp")
                   .fontColor($r('app.color.register_success_text_font'))
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
-                TextInput()
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .placeholderColor($r('app.color.text_input_place_holder'))
-                  .placeholderFont({ size: $r('app.float.text_input_font_size') })
-                  .fontSize($r('app.float.text_input_font_size'))
-                  .backgroundColor($r('app.color.login_input_text_background'))
-                  .padding({ left: $r('app.float.password_padding_left') })
-                  .type(InputType.Number)
-                  .maxLength(3)
-                  .border({
-                    width: { bottom: $r('app.float.input_border_width') },
-                    color: $r('app.color.input_border_color'),
-                    radius: $r('app.float.input_border_radius')
-                  })
-                  .onChange((value: string) => {
-                  })
-                  .enabled(false)
-
-
                 Row() {
-                  TextInput({ placeholder: 'XXX', text: '080' })
-                    .width('30%')
-                    .height($r('app.float.text_input_height'))
-                    .placeholderColor($r('app.color.text_input_place_holder'))
-                    .placeholderFont({ size: $r('app.float.text_input_font_size') })
-                    .fontSize($r('app.float.text_input_font_size'))
-                    .backgroundColor($r('app.color.login_input_text_background'))
-                    .padding({ left: $r('app.float.password_padding_left') })
-                    .type(InputType.Number)
-                    .maxLength(3)
-                    .border({
-                      width: { bottom: $r('app.float.input_border_width') },
-                      color: $r('app.color.input_border_color'),
-                      radius: $r('app.float.input_border_radius')
-                    })
-                    .margin({ bottom: $r('app.float.input_margin_bottom') })
-                    .onChange((value: string) => {
-                    })
-                    .id("userId1")
-
-                  Text('ー')
-                    .width(10)
-                    .height($r('app.float.text_input_height'))
-                    .textAlign(TextAlign.Center)
-
-                  TextInput({ placeholder: 'XXXX', text: '0000' })
-                    .width('30%')
-                    .height($r('app.float.text_input_height'))
-                    .placeholderColor($r('app.color.text_input_place_holder'))
-                    .placeholderFont({ size: $r('app.float.text_input_font_size') })
-                    .fontSize($r('app.float.text_input_font_size'))
-                    .backgroundColor($r('app.color.login_input_text_background'))
-                    .padding({ left: $r('app.float.password_padding_left') })
-                    .type(InputType.Number)
-                    .maxLength(4)
-                    .border({
-                      width: { bottom: $r('app.float.input_border_width') },
-                      color: $r('app.color.input_border_color'),
-                      radius: $r('app.float.input_border_radius')
-                    })
-                    .margin({ bottom: $r('app.float.input_margin_bottom') })
-                    .onChange((value: string) => {
-                    })
-                    .id("userId2")
-                    .onFocus(() => {
-                      sendEventByKey("userId2", 10, "")
-                    })
-
-                  Text('ー')
-                    .width(10)
-                    .height($r('app.float.text_input_height'))
-                    .textAlign(TextAlign.Center)
-
-                  TextInput({ placeholder: 'XXXX', text: '0001' })
-                    .width('30%')
-                    .height($r('app.float.text_input_height'))
-                    .placeholderColor($r('app.color.text_input_place_holder'))
-                    .placeholderFont({ size: $r('app.float.text_input_font_size') })
-                    .fontSize($r('app.float.text_input_font_size'))
-                    .backgroundColor($r('app.color.login_input_text_background'))
-                    .padding({ left: $r('app.float.password_padding_left') })
-                    .maxLength(4)
-                    .type(InputType.Number)
-                    .border({
-                      width: { bottom: $r('app.float.input_border_width') },
-                      color: $r('app.color.input_border_color'),
-                      radius: $r('app.float.input_border_radius')
-                    })
-                    .margin({ bottom: $r('app.float.input_margin_bottom') })
-                    .onChange((value: string) => {
-                    })
-                    .id("userId3")
-                    .onFocus(() => {
-                      sendEventByKey("userId3", 10, "")
-                    })
-                }.width('80%')
+                  Row() {
+                    Text().height($r('app.float.text_input_height')).fontSize($r('app.float.text_input_font_size'))
+                  }
+                  .width("95%")
+                  Blank()
+                    .layoutWeight(1)
+                  Image($r('app.media.right_grey')).width(8).height(16)
+                }
+                .width("80%")
+                .justifyContent(FlexAlign.SpaceBetween)
+                .backgroundColor("#ffd7d6d6")
+                .border({
+                  color: $r('app.color.input_border_color'),
+                  radius: 10
+                })
               }
             }
           }
@@ -450,9 +456,26 @@ export struct CompanyInfoPage {
               .align(Alignment.BottomEnd)
               .textAlign(TextAlign.End)
               .onClick(() => {
-                router.clear()
-                Logger.debug("router=>", router.getLength().toString())
-                router.pushUrl({url: CommonConstants.HOME_PAGE_URL})
+
+                AlertDialog.show({
+                  title: '確認',
+                  message: 'データを保存します。よろしいですか？',
+                  autoCancel: true,
+                  alignment: DialogAlignment.Center,
+                  offset: { dx: 0, dy: -10 },
+                  primaryButton: {
+                    value: 'はい',
+                    action: () => {
+                      console.log('Get Alert Dialog handled')
+                    }
+                  },
+                  secondaryButton: {
+                    value: "いいえ",
+                    action: () => {
+
+                    }
+                  }
+                })
               })
           }
           .width('50%')
