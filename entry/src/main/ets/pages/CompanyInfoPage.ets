@@ -1,19 +1,29 @@
 
 import router from '@ohos.router'
-import promptAction from '@ohos.promptAction'
 import { CommonConstants } from '../common/constants/CommonConstants'
 import Logger from '../common/utils/Logger'
 import { MediaBean, MediaHelper, MediaOption } from '../helepr/MediaHelper'
 import common from '@ohos.app.ability.common'
+import { CompanyInfo } from '../model/CompanyInfo'
+import { MasterDto } from '../model/MasterDto'
 
-@Entry
+
+let storage: LocalStorage = LocalStorage.GetShared()
+
+@Entry(storage)
 @Component
 export struct CompanyInfoPage {
   @State handlePopup: boolean = false
   @State mediaBean: MediaBean = new MediaBean();
+  @Provide companyInfo: CompanyInfo = new CompanyInfo();
+  @State workTypeNames: string = "";
   private mediaHelper: MediaHelper = new MediaHelper(getContext());
+  @LocalStorageProp("dict") dict: MasterDto = new MasterDto();
+  @LocalStorageProp("company") company: any = {};
 
-  aboutToAppear() {
+  async aboutToAppear() {
+    this.companyInfo = new CompanyInfo(this.company)
+    this.workTypeNames = this.companyInfo.getWorkerTypeNames()
   }
 
   async handleClick(option: MediaOption) {
@@ -74,7 +84,7 @@ export struct CompanyInfoPage {
                   .fontSize("12fp")
                   .fontColor($r('app.color.register_success_text_font'))
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
-                Text("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                Text(this.companyInfo.licenseId)
                   .width('80%')
                   .height($r('app.float.text_input_height'))
                   .textAlign(TextAlign.Start)
@@ -93,7 +103,7 @@ export struct CompanyInfoPage {
                   .fontSize("12fp")
                   .fontColor($r('app.color.register_success_text_font'))
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
-                Text("123456")
+                Text(this.companyInfo.contrId)
                   .width('80%')
                   .height($r('app.float.text_input_height'))
                   .textAlign(TextAlign.Start)
@@ -112,7 +122,7 @@ export struct CompanyInfoPage {
                   .fontSize("12fp")
                   .fontColor($r('app.color.register_success_text_font'))
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
-                Text("123456")
+                Text(this.companyInfo.contrType)
                   .width('80%')
                   .height($r('app.float.text_input_height'))
                   .textAlign(TextAlign.Start)
@@ -130,7 +140,7 @@ export struct CompanyInfoPage {
                   .fontSize("12fp")
                   .fontColor($r('app.color.register_success_text_font'))
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
-                Text("123456")
+                Text(this.companyInfo.companyName)
                   .width('80%')
                   .height($r('app.float.text_input_height'))
                   .textAlign(TextAlign.Start)
@@ -149,7 +159,7 @@ export struct CompanyInfoPage {
                   .fontSize("12fp")
                   .fontColor($r('app.color.register_success_text_font'))
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
-                Text("123456")
+                Text(this.companyInfo.presName)
                   .width('80%')
                   .height($r('app.float.text_input_height'))
                   .textAlign(TextAlign.Start)
@@ -168,7 +178,7 @@ export struct CompanyInfoPage {
                   .fontSize("12fp")
                   .fontColor($r('app.color.register_success_text_font'))
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
-                Text("123456")
+                Text(this.companyInfo.companyAddr)
                   .width('80%')
                   .height($r('app.float.text_input_height'))
                   .textAlign(TextAlign.Start)
@@ -187,7 +197,7 @@ export struct CompanyInfoPage {
                   .fontSize("12fp")
                   .fontColor($r('app.color.register_success_text_font'))
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
-                TextInput({ placeholder: 'XXX', text: '080' })
+                TextInput({ placeholder: '会社電話番号', text: this.companyInfo.companyTel })
                   .width('80%')
                   .height($r('app.float.text_input_height'))
                   .placeholderColor($r('app.color.text_input_place_holder'))
@@ -211,7 +221,7 @@ export struct CompanyInfoPage {
                   .fontSize("12fp")
                   .fontColor($r('app.color.register_success_text_font'))
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
-                Text("123456")
+                Text(this.companyInfo.presEmail)
                   .width('80%')
                   .height($r('app.float.text_input_height'))
                   .textAlign(TextAlign.Start)
@@ -250,13 +260,13 @@ export struct CompanyInfoPage {
                         {
                           title: 'カメラ',
                           action: () => {
-                            this.handleClick(MediaOption.Picture);
+                            this.handleClick(MediaOption.TakePhoto);
                           }
                         },
                         {
                           title: '写真ライブラリ',
                           action: () => {
-                            this.handleClick(MediaOption.TakePhoto);
+                            this.handleClick(MediaOption.Picture);
                           }
                         }
                       ]
@@ -273,7 +283,7 @@ export struct CompanyInfoPage {
                   .margin({ top: $r('app.float.register_success_text_margin_top') })
                 Row() {
                   Row() {
-                    TextArea({text: "任务编辑页由上方的“编辑任务”标题以及返回按钮，主体内容的List配置项和下方的完成按钮组成。任务编辑页面，由Navigation和一个自定义组件TaskDetail构成。自定义组件由List以及其子组件ListItem构成，实现效果如图"})
+                    TextArea({text: this.workTypeNames})
                       .width('100%')
                       .height('auto')
                       .textAlign(TextAlign.Start)
@@ -287,6 +297,9 @@ export struct CompanyInfoPage {
                     .layoutWeight(1)
                   Image($r('app.media.right_grey')).width(8).height(16)
                 }
+                .onClick(() => {
+                  router.pushUrl({url: CommonConstants.WORK_TYPE_LIST_PAGE_URL, params: this.companyInfo})
+                })
                 .width("80%")
                 .justifyContent(FlexAlign.SpaceBetween)
                 .backgroundColor("#ffd7d6d6")
@@ -423,6 +436,7 @@ export struct CompanyInfoPage {
           }
         }
         .flexGrow(CommonConstants.FLEX_GROW)
+        .align(Alignment.TopStart)
       }
     }
     .backgroundColor("#DCDCDC")

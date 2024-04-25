@@ -9,8 +9,11 @@ import PreferencesUtil from '../common/utils/Preferencesutil';
  * Lift cycle management of Ability.
  */
 export default class EntryAbility extends UIAbility {
+  storage: LocalStorage
+
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
+    this.storage = new LocalStorage()
     PreferencesUtil.loadPreference(this.context, "zenPreference")
   }
 
@@ -21,8 +24,7 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
-
-    windowStage.loadContent("pages/HomePage", (err, data) => {
+    windowStage.loadContent("pages/HomePage", this.storage, (err, data) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
         return;

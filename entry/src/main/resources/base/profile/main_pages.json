@@ -3,6 +3,7 @@
     "pages/HomePage",
     "pages/RegisterPage",
     "pages/PrivacyPage",
-    "pages/CompanyInfoPage"
+    "pages/CompanyInfoPage",
+    "pages/WorkTypeListPage"
   ]
 }

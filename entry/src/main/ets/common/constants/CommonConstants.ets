@@ -223,6 +223,13 @@ export class CommonConstants {
   static readonly COMPANY_INFO_PAGE_URL: string = 'pages/CompanyInfoPage';
 
   /**
+   * Mine page url.
+   */
+  static readonly WORK_TYPE_LIST_PAGE_URL: string = 'pages/WorkTypeListPage';
+
+
+
+  /**
    * Percent of the text input.
    */
   static readonly TEXT_INPUT_WIDTH_PERCENT: string = '100%';
@@ -301,4 +308,7 @@ export class CommonConstants {
    * Percent of the column width in detail page.
    */
   static readonly DETAIL_COLUMN_WIDTH_PERCENT: string = '93%';
+
+  // list space
+  static readonly LIST_ITEM_SPACE: number = 2;
 }

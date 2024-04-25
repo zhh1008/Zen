@@ -6,17 +6,16 @@ import { LeftMenuItemData } from '../common/bean/LeftMenuItemData';
 import preferenceUtils from '../common/utils/PreferencesUtil';
 import { siteApi } from '../api/SiteApi';
 import { imageApi } from '../api/ImageApi';
-import { ApiResult } from '../common/http/ApiResult';
 import image from '@ohos.multimedia.image';
-import Logger from '../common/utils/Logger';
 import { ImageDLRequest } from '../api/request/ImageDLRequest';
 import { DecodingOptions } from '../common/http/RequestOptions';
 import router from '@ohos.router';
+import { companyApi } from '../api/CompanyApi';
+import { MasterDto } from '../model/MasterDto';
 
 /**
  * Personal Center page, displaying personal information and app-related settings.
  */
-// @Entry
 @Component
 export struct MinePage {
   @Link isLogged: boolean;
@@ -25,7 +24,9 @@ export struct MinePage {
   private scroller: Scroller = new Scroller()
   @State dataSource: MyDataSource = new MyDataSource();
   private currentDate: Date = new Date();
+  @LocalStorageProp("dict") dict: MasterDto = new MasterDto();
   @State userName: string = "";
+  @LocalStorageLink("company") company: any = {};
 
   @State model: DrawerLayout.Model = new DrawerLayout.Model()
     // 设置左侧边栏DrawerLayout.Type.LEFT 还是右侧边栏DrawerLayout.Type.RIGHT
@@ -46,6 +47,7 @@ export struct MinePage {
   }
 
   async aboutToAppear() {
+    this.company = (await companyApi.companyInfo()).data['companyInfo']
     this.userName = (await preferenceUtils.get("userName", "")).toString();
     this.loadData()
   }
@@ -161,7 +163,7 @@ export struct MinePage {
     Column() {
       Flex({justifyContent: FlexAlign.SpaceBetween, alignItems: ItemAlign.End, direction: FlexDirection.Column}) {
         Flex({direction: FlexDirection.Column, alignItems: ItemAlign.Center}) {
-          Text('株式会社繕')
+          Text(this.company['companyName'])
             .fontSize(30)
             .fontWeight(FontWeight.Bold)
 
