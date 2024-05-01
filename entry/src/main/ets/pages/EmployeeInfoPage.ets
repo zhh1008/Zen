@@ -1,10 +1,11 @@
 
 import router from '@ohos.router';
+import { CommonApi } from '../api/CommonApi';
 import { EmployeeRequest } from '../api/request/EmployeeRequest';
 import { UserApi } from '../api/UserApi';
 import CommonUtils from '../common/CommonUtils';
 import { CommonConstants } from '../common/constants/CommonConstants';
-import Logger from '../common/utils/Logger';
+import StringUtils from '../common/utils/StringUtils';
 import { EmployeeInfoDto } from '../model/EmployeeInfoDto';
 import { MasterDto } from '../model/MasterDto';
 import { UserDto } from '../model/UserDto';
@@ -22,13 +23,41 @@ export struct CompanyInfoPage {
   @State userDto: UserDto = new UserDto()
   @State employeeInfoDto: EmployeeInfoDto = new EmployeeInfoDto()
   @State companyManager: boolean = false;
-  private sexArray: Resource = $r('app.strarray.sex_array');
+  @State kentaikyoTetyou: boolean = false;
+  liveAddressController: CustomDialogController = new CustomDialogController({
+    builder: TextInputDialog({
+      confirm:(value) => {
+        (new CommonApi()).getByZipCode(value).then((data) => {
+          if (data['status'] == 200) {
+            this.userDto.liveAddress = "〒" + data['results'][0]['zipcode'] + data['results'][0]['address1'] + data['results'][0]['address2'] + data['results'][0]['address3']
+          }
+        })
+      }
+    }),
+    alignment: DialogAlignment.Center,
+    offset: {dx:0, dy: -30}
+  })
+
+  emergencyContactAddressController: CustomDialogController = new CustomDialogController({
+    builder: TextInputDialog({
+      confirm:(value) => {
+        (new CommonApi()).getByZipCode(value).then((data) => {
+          if (data['status'] == 200) {
+            this.employeeInfoDto.emergencyContactAddress = "〒" + data['results'][0]['zipcode'] + data['results'][0]['address1'] + data['results'][0]['address2'] + data['results'][0]['address3']
+          }
+        })
+      }
+    }),
+    alignment: DialogAlignment.Center,
+    offset: {dx:0, dy: -30}
+  })
 
   async aboutToAppear() {
     let userInfoJsonData = await (new UserApi()).userInfo(new EmployeeRequest(this.userId));
     this.userDto = new UserDto(userInfoJsonData.data['userInfo'])
     this.employeeInfoDto = new EmployeeInfoDto(userInfoJsonData.data['employeeInfo']);
     this.companyManager = this.userDto.roleId == '5' ? true : false;
+    this.kentaikyoTetyou = this.employeeInfoDto.kentaikyoTetyou == '1' ? true : false;
   }
 
   build() {
@@ -81,19 +110,7 @@ export struct CompanyInfoPage {
 
 
                 this.CustomText('ID')
-                Text(this.userDto.username)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .textOverflow({ overflow: TextOverflow.Ellipsis })
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
-
+                Text(this.userDto.username).customTextStyles()
 
                 if (this.userDto.contrFlg != '1') {
                   Column() {
@@ -102,7 +119,7 @@ export struct CompanyInfoPage {
                       Blank()
                         .layoutWeight(1)
                       Toggle({ type: ToggleType.Switch, isOn: this.companyManager })
-                        .size({ width: 20, height: 20 })
+                        .size({ width: 80, height: 40 })
                         .selectedColor('#007DFF')
                         .onChange((isOn: boolean) => {
                           this.companyManager = isOn
@@ -140,66 +157,23 @@ export struct CompanyInfoPage {
                 .width('80%')
 
                 this.CustomText('氏名')
-                Text(this.userDto.name)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                TextInput({text: this.userDto.name}).customTextInputStyles()
 
                 this.CustomText('ふりがな')
-                Text(this.userDto.reading)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                TextInput({text: this.userDto.reading}).customTextInputStyles()
 
                 this.CustomText('携帯電話番号')
-                Text(this.userDto.username)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                TextInput({text: this.userDto.username}).customTextInputStyles()
 
                 this.CustomText('性別')
                 Row() {
                   Row() {
-                    Text(this.userDto.sex)
-                      .width('80%')
-                      .height($r('app.float.text_input_height'))
-                      .textAlign(TextAlign.Start)
-                      .fontSize('20fp')
-                      .fontColor($r('app.color.register_success_text_font'))
-                      .backgroundColor("#ffd7d6d6")
-                      .border({
-                        color: $r('app.color.input_border_color'),
-                        radius: 10
-                      }).onClick(() => {
-                      CommonUtils.textPickerDialog(this.sexArray, this.userDto.sex, (sexValue: string) => {
-                        this.userDto.sex = sexValue;
-                      });
-                    })
+                    Text(StringUtils.convertSexByCode(this.userDto.sex))
+                      .customTextStyles()
+                      .width('100%')
                   }
                   .width("95%")
-                  Blank()
-                    .layoutWeight(1)
+                  Blank().layoutWeight(1)
                   Image($r('app.media.right_grey')).width(8).height(16)
                 }
                 .width("80%")
@@ -208,59 +182,44 @@ export struct CompanyInfoPage {
                 .border({
                   color: $r('app.color.input_border_color'),
                   radius: 10
+                })
+                .onClick(() => {
+                  CommonUtils.textPickerDialog($r('app.strarray.sex_array'), StringUtils.convertSexByCode(this.userDto.sex), (sexValue: string) => {
+                    this.userDto.sex = StringUtils.convertSexByName(sexValue);
+                  });
                 })
 
 
                 this.CustomText('現住所')
-                Text(this.userDto.liveAddress)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Column() {
+                  Row() {
+                    Text(this.userDto.liveAddress).customTextStyles()
+                    Blank()
+                      .layoutWeight(1)
+                    Button('郵便番号検索')
+                      .width('20%')
+                      .height('40vp')
+                      .fontSize("12fp")
+                      .fontColor($r('app.color.register_success_text_font'))
+                      .margin({ top: $r('app.float.register_success_text_margin_top') })
+                      .onClick(() => {
+                        this.liveAddressController.open()
+                      })
+                  }
+                }.width('80%')
 
                 this.CustomText('自宅電話番号')
-                Text(this.employeeInfoDto.homeTel)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                TextInput({text: this.employeeInfoDto.homeTel}).customTextInputStyles()
 
                 this.CustomText('生年月日')
                 Row() {
                   Row() {
-                    Text(this.userDto.birth)
-                      .width('80%')
-                      .height($r('app.float.text_input_height'))
-                      .textAlign(TextAlign.Start)
-                      .fontSize('20fp')
-                      .fontColor($r('app.color.register_success_text_font'))
-                      .backgroundColor("#ffd7d6d6")
-                      .border({
-                        color: $r('app.color.input_border_color'),
-                        radius: 10
-                      })
-                      .onClick(() => {
-                        CommonUtils.datePickerDialog(this.userDto.birth, (year: number, month: number, day: number) => {
-                          let yearAmerican = this.dict.yearAmerican.convertToArray().find(item => item.code === year.toString());
-                          this.userDto.birth = yearAmerican.name + "年" + month + "月" + day + "日";
-                        });
-                      })
+                    Text(StringUtils.toJapaneseCalendar(this.userDto.birth, this.dict.yearAmerican.convertToArray()))
+                      .customTextStyles()
                   }
                   .width("95%")
-                  Blank()
-                    .layoutWeight(1)
+
+                  Blank().layoutWeight(1)
                   Image($r('app.media.right_grey')).width(8).height(16)
                 }
                 .width("80%")
@@ -270,369 +229,269 @@ export struct CompanyInfoPage {
                   color: $r('app.color.input_border_color'),
                   radius: 10
                 })
+                .onClick(() => {
+                  CommonUtils.datePickerDialog(this.userDto.birth, (year: number, month: number, day: number) => {
+                    this.userDto.birth = year + "-" + month + "-" + day;
+                  });
+                })
 
 
                 this.CustomText('緊急連絡先氏名')
-                Text(this.employeeInfoDto.emergencyContactName)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                TextInput({text: this.employeeInfoDto.emergencyContactName}).customTextInputStyles()
 
                 this.CustomText('緊急連絡先ふりがな')
-                Text(this.employeeInfoDto.emergencyContactRead)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                TextInput({text: this.employeeInfoDto.emergencyContactRead}).customTextInputStyles()
 
                 this.CustomText('緊急連絡先続柄')
-                Text(this.employeeInfoDto.emergencyContactRelationship)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Row() {
+                  Row() {
+                    Text(StringUtils.convertRelationshipByCode(this.employeeInfoDto.emergencyContactRelationship))
+                      .customTextStyles()
+                  }
+                  .width("95%")
+
+                  Blank().layoutWeight(1)
+                  Image($r('app.media.right_grey')).width(8).height(16)
+                }
+                .width("80%")
+                .justifyContent(FlexAlign.SpaceBetween)
+                .backgroundColor("#ffd7d6d6")
+                .border({
+                  color: $r('app.color.input_border_color'),
+                  radius: 10
+                })
+                .onClick(() => {
+                  CommonUtils.textPickerDialog($r('app.strarray.relationship_array'), StringUtils.convertRelationshipByCode(this.employeeInfoDto.emergencyContactRelationship), (value: string) => {
+                    this.employeeInfoDto.emergencyContactRelationship = StringUtils.convertRelationshipByName(value);
+                  });
+                })
+
 
                 this.CustomText('緊急連絡先住所')
-                Text(this.employeeInfoDto.emergencyContactAddress)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Column() {
+                  Row() {
+                    Text(this.employeeInfoDto.emergencyContactAddress).customTextStyles()
+                    Blank()
+                      .layoutWeight(1)
+                    Button('郵便番号検索')
+                      .width('20%')
+                      .height('40vp')
+                      .fontSize("12fp")
+                      .fontColor($r('app.color.register_success_text_font'))
+                      .margin({ top: $r('app.float.register_success_text_margin_top') })
+                      .onClick(() => {
+                        this.emergencyContactAddressController.open()
+                      })
+                  }
+                }.width('80%')
 
                 this.CustomText('緊急連絡先電話番号')
-                Text(this.employeeInfoDto.emergencyContactTel)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                TextInput({text: this.employeeInfoDto.emergencyContactTel}).customTextInputStyles()
 
                 this.CustomText('雇用契約')
-                Text(this.employeeInfoDto.employmentContract)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Row() {
+                  Row() {
+                    Text(StringUtils.convertEmploymentContractByCode(this.employeeInfoDto.employmentContract)).customTextStyles()
+                  }
+                  .width("95%")
+
+                  Blank().layoutWeight(1)
+                  Image($r('app.media.right_grey')).width(8).height(16)
+                }
+                .width("80%")
+                .justifyContent(FlexAlign.SpaceBetween)
+                .backgroundColor("#ffd7d6d6")
+                .border({
+                  color: $r('app.color.input_border_color'),
+                  radius: 10
+                })
+                .onClick(() => {
+                  CommonUtils.textPickerDialog($r('app.strarray.employment_contract_array'), StringUtils.convertEmploymentContractByCode(this.employeeInfoDto.employmentContract), (value: string) => {
+                    this.employeeInfoDto.employmentContract = StringUtils.convertEmploymentContractByName(value);
+                  });
+                })
+
 
                 this.CustomText('雇入年月日')
-                Text(this.employeeInfoDto.hireDate)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
-                  .onClick(() => {
-                    CommonUtils.datePickerDialog(this.userDto.birth, (year: number, month: number, day: number) => {
-                      let yearAmerican = this.dict.yearAmerican.convertToArray().find(item => item.code === year.toString());
-                      this.employeeInfoDto.hireDate = yearAmerican.name + "年" + month + "月" + day + "日";
-                    });
-                  })
+                Row() {
+                  Row() {
+                    Text(StringUtils.toJapaneseCalendar(this.employeeInfoDto.hireDate, this.dict.yearAmerican.convertToArray()))
+                      .customTextStyles()
+                  }
+                  .width("95%")
+
+                  Blank().layoutWeight(1)
+                  Image($r('app.media.right_grey')).width(8).height(16)
+                }
+                .width("80%")
+                .justifyContent(FlexAlign.SpaceBetween)
+                .backgroundColor("#ffd7d6d6")
+                .border({
+                  color: $r('app.color.input_border_color'),
+                  radius: 10
+                })
+                .onClick(() => {
+                  CommonUtils.datePickerDialog(this.employeeInfoDto.hireDate, (year: number, month: number, day: number) => {
+                    this.employeeInfoDto.hireDate = year + "-" + month + "-" + day;
+                  });
+                })
+
 
                 this.CustomText('経験開始年月日')
-                Text(this.employeeInfoDto.experienceStartDate)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
-                  .onClick(() => {
-                    CommonUtils.datePickerDialog(this.userDto.birth, (year: number, month: number, day: number) => {
-                      let yearAmerican = this.dict.yearAmerican.convertToArray().find(item => item.code === year.toString());
-                      this.employeeInfoDto.experienceStartDate = yearAmerican.name + "年" + month + "月" + day + "日";
-                    });
-                  })
+                Row() {
+                  Row() {
+                    Text(StringUtils.toJapaneseCalendar(this.employeeInfoDto.experienceStartDate, this.dict.yearAmerican.convertToArray()))
+                      .customTextStyles()
+                  }
+                  .width("95%")
+
+                  Blank().layoutWeight(1)
+                  Image($r('app.media.right_grey')).width(8).height(16)
+                }
+                .width("80%")
+                .justifyContent(FlexAlign.SpaceBetween)
+                .backgroundColor("#ffd7d6d6")
+                .border({
+                  color: $r('app.color.input_border_color'),
+                  radius: 10
+                })
+                .onClick(() => {
+                  CommonUtils.datePickerDialog(this.employeeInfoDto.experienceStartDate, (year: number, month: number, day: number) => {
+                    this.employeeInfoDto.experienceStartDate = year + "-" + month + "-" + day;
+                  });
+                })
 
                 this.CustomText('作業員名簿の※印欄')
-                Text(this.employeeInfoDto.workerAttribute != null ? this.employeeInfoDto.workerAttribute.join(',') : "")
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Text(StringUtils.convertWorkerAttributeByCodes(this.employeeInfoDto.workerAttribute)).customTextStyles()
 
                 this.CustomText('職種')
-                Text(this.employeeInfoDto.bloodType)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Text(this.employeeInfoDto.getOccupationNames()).customTextStyles()
 
                 this.CustomText('血液型')
-                Text(this.employeeInfoDto.bloodType)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Row() {
+                  Row() {
+                    Text(StringUtils.convertBloodTypeByCode(this.employeeInfoDto.bloodType)).customTextStyles()
+                  }
+                  .width("95%")
+
+                  Blank().layoutWeight(1)
+                  Image($r('app.media.right_grey')).width(8).height(16)
+                }
+                .width("80%")
+                .justifyContent(FlexAlign.SpaceBetween)
+                .backgroundColor("#ffd7d6d6")
+                .border({
+                  color: $r('app.color.input_border_color'),
+                  radius: 10
+                })
+                .onClick(() => {
+                  CommonUtils.textPickerDialog($r('app.strarray.blood_type_array'), StringUtils.convertBloodTypeByCode(this.employeeInfoDto.bloodType), (value: string) => {
+                    this.employeeInfoDto.bloodType = StringUtils.convertBloodTypeByName(value);
+                  });
+                })
+
 
                 this.CustomText('最近の血圧(最高血圧)')
-                Text(this.employeeInfoDto.highPressure)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                TextInput({text: this.employeeInfoDto.highPressure}).customTextInputStyles()
 
                 this.CustomText('最近の血圧(最低血圧)')
-                Text(this.employeeInfoDto.lowPressure)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                TextInput({text: this.employeeInfoDto.lowPressure}).customTextInputStyles()
 
                 this.CustomText('最近の健康診断日')
-                Text(this.employeeInfoDto.healthCheckupDate)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
-                  .onClick(() => {
-                    CommonUtils.datePickerDialog(this.userDto.birth, (year: number, month: number, day: number) => {
-                      let yearAmerican = this.dict.yearAmerican.convertToArray().find(item => item.code === year.toString());
-                      this.employeeInfoDto.healthCheckupDate = yearAmerican.name + "年" + month + "月" + day + "日";
-                    });
-                  })
+                Row() {
+                  Row() {
+                    Text(StringUtils.toJapaneseCalendar(this.employeeInfoDto.healthCheckupDate, this.dict.yearAmerican.convertToArray()))
+                      .customTextStyles()
+                  }
+                  .width("95%")
+
+                  Blank().layoutWeight(1)
+                  Image($r('app.media.right_grey')).width(8).height(16)
+                }
+                .width("80%")
+                .justifyContent(FlexAlign.SpaceBetween)
+                .backgroundColor("#ffd7d6d6")
+                .border({
+                  color: $r('app.color.input_border_color'),
+                  radius: 10
+                })
+                .onClick(() => {
+                  CommonUtils.datePickerDialog(this.employeeInfoDto.healthCheckupDate, (year: number, month: number, day: number) => {
+                    this.employeeInfoDto.healthCheckupDate = year + "-" + month + "-" + day;
+                  });
+                })
 
                 this.CustomText('最近の健康診断画像')
-                Text(this.userDto.username)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Text(this.employeeInfoDto.healthCheckupImgId != null ? "" : "未登録").customTextStyles()
 
                 this.CustomText('特殊健康診断日')
-                Text(this.employeeInfoDto.specialMedicalExaminationDate)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
-                  .onClick(() => {
-                    CommonUtils.datePickerDialog(this.userDto.birth, (year: number, month: number, day: number) => {
-                      let yearAmerican = this.dict.yearAmerican.convertToArray().find(item => item.code === year.toString());
-                      this.employeeInfoDto.specialMedicalExaminationDate = yearAmerican.name + "年" + month + "月" + day + "日";
-                    });
-                  })
+                Row() {
+                  Row() {
+                    Text(StringUtils.toJapaneseCalendar(this.employeeInfoDto.specialMedicalExaminationDate, this.dict.yearAmerican.convertToArray()))
+                      .customTextStyles()
+                  }
+                  .width("95%")
+
+                  Blank().layoutWeight(1)
+                  Image($r('app.media.right_grey')).width(8).height(16)
+                }
+                .width("80%")
+                .justifyContent(FlexAlign.SpaceBetween)
+                .backgroundColor("#ffd7d6d6")
+                .border({
+                  color: $r('app.color.input_border_color'),
+                  radius: 10
+                })
+                .onClick(() => {
+                  CommonUtils.datePickerDialog(this.employeeInfoDto.specialMedicalExaminationDate, (year: number, month: number, day: number) => {
+                    this.employeeInfoDto.specialMedicalExaminationDate = year + "-" + month + "-" + day;
+                  });
+                })
 
                 this.CustomText('特殊健康診断画像')
-                Text(this.userDto.username)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Text(this.employeeInfoDto.specialMedicalExaminationImgId != null ? "" : "未登録").customTextStyles()
 
                 this.CustomText('特殊健康診断種類')
-                Text(this.userDto.username)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Text(StringUtils.convertSpecialMedicalExaminationTypeByCode(this.employeeInfoDto.specialMedicalExaminationType)).customTextStyles()
 
                 this.CustomText('健康保険')
-                Text(this.userDto.username)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Text(StringUtils.convertHealthInsuranceByCode(this.employeeInfoDto.healthInsurance)).customTextStyles()
 
                 this.CustomText('健康保険番号下４桁')
-                Text(this.userDto.username)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Text(this.employeeInfoDto.healthInsuranceNumber).customTextStyles()
 
                 this.CustomText('雇入・職長・特別教育')
-                Text(this.userDto.username)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Text(this.employeeInfoDto.getForemanNames()).customTextStyles()
 
                 this.CustomText('技能講習')
-                Text(this.userDto.username)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Text(this.employeeInfoDto.getSkillTrainingNames()).customTextStyles()
 
                 this.CustomText('免許')
-                Text(this.userDto.username)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Text(this.employeeInfoDto.getLicenseNames()).customTextStyles()
 
                 this.CustomText('在留資格')
-                Text(this.userDto.username)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Text(StringUtils.convertPeriodStatusByCode(this.employeeInfoDto.periodStatus)).customTextStyles()
 
                 this.CustomText('建設キャリアアップシステムカード（表）登録義務のある者のみ')
-                Text(this.userDto.username)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Text(this.userDto.username).customTextStyles()
 
                 this.CustomText('建設キャリアアップシステムカード（裏）登録義務のある者のみ')
-                Text(this.userDto.username)
-                  .width('80%')
-                  .height($r('app.float.text_input_height'))
-                  .textAlign(TextAlign.Start)
-                  .fontSize('20fp')
-                  .fontColor($r('app.color.register_success_text_font'))
-                  .backgroundColor("#ffd7d6d6")
-                  .border({
-                    color: $r('app.color.input_border_color'),
-                    radius: 10
-                  })
+                Text(this.userDto.username).customTextStyles()
+
+                Column() {
+                  Row() {
+                    Text('建退共手帳所有の有無').fontSize(20)
+                    Blank()
+                      .layoutWeight(1)
+                    Toggle({ type: ToggleType.Switch, isOn: this.kentaikyoTetyou })
+                      .size({ width: 80, height: 40 })
+                      .selectedColor('#007DFF')
+                      .onChange((isOn: boolean) => {
+                        this.kentaikyoTetyou = isOn
+                      })
+                  }
+                }
+                .width('80%')
               }
               .padding({ left: 10, right: 10 })
 
@@ -646,8 +505,8 @@ export struct CompanyInfoPage {
     .backgroundColor("#DCDCDC")
   }
 
-  @Builder CustomText(name: string) {
-    Text(name)
+  @Builder CustomText(text: string) {
+    Text(text)
       .width('80%')
       .height($r('app.float.register_success_text_height'))
       .textAlign(TextAlign.Start)
@@ -655,6 +514,29 @@ export struct CompanyInfoPage {
       .fontColor($r('app.color.register_success_text_font'))
       .margin({ top: $r('app.float.register_success_text_margin_top') })
   }
+
+  // @Builder CustomInputText(text: string, callback: Function) {
+  //   Row() {
+  //     Row() {
+  //       Text(text)
+  //         .customTextStyles()
+  //         .onClick(() => {
+  //           callback()
+  //         })
+  //     }
+  //     .width("95%")
+  //
+  //     Blank().layoutWeight(1)
+  //     Image($r('app.media.right_grey')).width(8).height(16)
+  //   }
+  //   .width("80%")
+  //   .justifyContent(FlexAlign.SpaceBetween)
+  //   .backgroundColor("#ffd7d6d6")
+  //   .border({
+  //     color: $r('app.color.input_border_color'),
+  //     radius: 10
+  //   })
+  // }
 
   @Builder Title() {
     Flex() {
@@ -740,5 +622,63 @@ export struct CompanyInfoPage {
     .width('100%')
     .height('10%')
     .backgroundColor('#FF0CA91A')
+  }
+}
+
+@Extend(Text) function customTextStyles() {
+  .width('80%')
+  .height($r('app.float.text_input_height'))
+  .textAlign(TextAlign.Start)
+  .fontSize('20fp')
+  .fontColor($r('app.color.register_success_text_font'))
+  .backgroundColor("#ffd7d6d6")
+  .textOverflow({ overflow: TextOverflow.Ellipsis })
+  .border({
+    color: $r('app.color.input_border_color'),
+    radius: 10
+  })
+}
+
+@Extend(TextInput) function customTextInputStyles() {
+  .width('80%')
+  .height($r('app.float.text_input_height'))
+  .textAlign(TextAlign.Start)
+  .fontSize('20fp')
+  .fontColor($r('app.color.register_success_text_font'))
+  .backgroundColor("#ffe9e7e7")
+  .border({
+    width: "1vp",
+    color: $r('app.color.input_border_color'),
+    radius: 10
+  })
+}
+
+
+@CustomDialog
+struct TextInputDialog {
+  controller: CustomDialogController = new CustomDialogController({builder: TextInputDialog()})
+  confirm: (value: string) => void;
+  value: string = '';
+
+  build() {
+    Column({space: 20}) {
+      Text('郵便番号検索')
+      TextInput({placeholder:'郵便番号７桁、ハイフンなし'})
+        .type(InputType.Number)
+        .onChange((value) => {
+          this.value = value
+        })
+      Row({space: 50}) {
+        Button('キャンセル')
+          .onClick(() => {
+            this.controller.close();
+          })
+        Button('検索')
+          .onClick(() => {
+            this.confirm(this.value);
+            this.controller.close();
+          })
+      }
+    }.padding(20)
   }
 }

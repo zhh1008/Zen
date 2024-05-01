@@ -10,6 +10,51 @@
           "value": "女"
         }
       ]
+    },
+    {
+      "name": "relationship_array",
+      "value": [
+        {
+          "value": "配偶者"
+        },
+        {
+          "value": "親"
+        },
+        {
+          "value": "子"
+        },
+        {
+          "value": "その他"
+        }
+      ]
+    },
+    {
+      "name": "blood_type_array",
+      "value": [
+        {
+          "value": "A"
+        },
+        {
+          "value": "B"
+        },
+        {
+          "value": "O"
+        },
+        {
+          "value": "AB"
+        }
+      ]
+    },
+    {
+      "name": "employment_contract_array",
+      "value": [
+        {
+          "value": "締結済み"
+        },
+        {
+          "value": "未締結"
+        }
+      ]
     }
   ]
 }

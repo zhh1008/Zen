@@ -9,7 +9,7 @@ export class EmployeeInfoDto {
       this.homeTel = jsonData['homeTel'];
       this.emergencyContactName = jsonData['emergencyContactName'];
       this.emergencyContactRead = jsonData['emergencyContactRead'];
-      this.emergencyContactRelationship = StringUtils.convertRelationshipByCode(jsonData['emergencyContactRelationship']);
+      this.emergencyContactRelationship = jsonData['emergencyContactRelationship'];
       this.emergencyContactAddress = jsonData['emergencyContactAddress'];
       this.emergencyContactTel = jsonData['emergencyContactTel'];
       this.employmentContract = jsonData['employmentContract'];
@@ -114,6 +114,46 @@ export class EmployeeInfoDto {
   foreman: Array<any>;
   skillTraining: Array<any>;
   occupationEngage: Array<any>;
-  license: string;
+  license: Array<any>;
   kentaikyoTetyou: string;
+
+  getOccupationNames() {
+    let result = []
+    if (this.occupation == null) {
+      return "";
+    }
+    this.occupation.forEach((element) => {
+      result.push(element['value'])
+    })
+    return result.join(",")
+  }
+
+  getForemanNames() {
+    let result = []
+    if (this.foreman == null) {
+      return "";
+    }
+    this.foreman.forEach((element) => {
+      result.push(element['value'])
+    })
+    return result.join(",")
+  }
+
+  getSkillTrainingNames() {
+    let result = []
+    if (this.skillTraining == null) {
+      return "";
+    }
+    this.skillTraining.forEach((element) => {
+      result.push(element['value'])
+    })
+    return result.join(",")
+  }
+
+  getLicenseNames() {
+    if (this.license == null) {
+      return "";
+    }
+    return this.license['driverLicenseType']
+  }
 }

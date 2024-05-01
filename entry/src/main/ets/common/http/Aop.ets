@@ -34,7 +34,7 @@ export function Get(url: string) {
           }
         }
       });
-      const urlParams = Object.keys(options.queryParams).map(key => `${key} = ${options.queryParams[key]}`).join('&')
+      const urlParams = Object.keys(options.queryParams).map(key => `${key}=${options.queryParams[key]}`).join('&')
       console.log('urlParams:', urlParams)
       Logger.debug("Aop", "urlParams:" + urlParams)
       if (URL.includes("?")) {
@@ -43,7 +43,7 @@ export function Get(url: string) {
         url = `${URL}?${urlParams}`
       }
       const p = new Promise<ApiResult>((resolve, reject) => {
-        httpUtil.Get(URL, options).then((response) => {
+        httpUtil.Get(url, options).then((response) => {
           const result: ApiResult = response;
           resolve(result);
         }).catch((error) => {

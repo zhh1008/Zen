@@ -6,11 +6,11 @@ class PreferencesUtil {
   preferencesMap: Map<string, preferences.Preferences> = new Map();
 
   async loadPreference(context, name: string) {
-    Logger.info("PreferencesUtil", `开始加载Preference [${name}]`)
+    // Logger.info("PreferencesUtil", `开始加载Preference [${name}]`)
     try {
       let preference = await preferences.getPreferences(context, name);
       this.preferencesMap.set(name, preference);
-      Logger.info("PreferencesUtil", `加载Preference [${name}] 成功`)
+      // Logger.info("PreferencesUtil", `加载Preference [${name}] 成功`)
       return preference;
     } catch(err) {
       Logger.error("PreferencesUtil", `加载Preference [${name}] 失败`, JSON.stringify(err));
@@ -27,7 +27,7 @@ class PreferencesUtil {
       await preference.put(key, value)
       // 刷盘
       await preference.flush()
-      Logger.info("PreferencesUtil", `保存Preference [${name}:${key} =${value}] 成功`)
+      // Logger.info("PreferencesUtil", `保存Preference [${name}:${key} =${value}] 成功`)
     } catch (err) {
       Logger.info("PreferencesUtil", `保存Preference [${name}:${key} =${value}] 失败`, JSON.stringify(err))
     }
@@ -40,7 +40,7 @@ class PreferencesUtil {
     try {
       let preference = this.preferencesMap.get(name)
       const value = await preference.get(key, defaultValue)
-      Logger.info('PreferencesUtil', `读取preferences[${name}:${key}=${value}]成功`)
+      // Logger.info('PreferencesUtil', `读取preferences[${name}:${key}=${value}]成功`)
       return value
     } catch (e) {
       Logger.info('PreferencesUtil', `读取preferences[${name}:${key}]失败`, JSON.stringify(e));
@@ -54,7 +54,7 @@ class PreferencesUtil {
     try {
       let preference = this.preferencesMap.get(name)
       await preference.delete(key)
-      Logger.info('PreferencesUtil', `删除preferences[${name}:${key}]成功`)
+      // Logger.info('PreferencesUtil', `删除preferences[${name}:${key}]成功`)
       // 刷盘
       await preference.flush()
       return
@@ -68,7 +68,7 @@ class PreferencesUtil {
 const isPreferencesHas = function (preferenceMap: Map<string, preferences.Preferences>, name) {
   try {
     if (!preferenceMap.has(name)) {
-      Logger.error("PreferencesUtil", `Preference[${name}]尚未初始化`);
+      // Logger.error("PreferencesUtil", `Preference[${name}]尚未初始化`);
       Promise.reject(`Preference[${name}]尚未初始化`)
     }
   }

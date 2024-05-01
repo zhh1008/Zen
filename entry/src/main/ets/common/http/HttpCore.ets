@@ -16,7 +16,8 @@ export class HttpCore {
         header: {
           'Content-Type': 'application/json',
           'Authorization': token,
-          'client_type': 'zen_harmonyOs'
+          'client_type': 'zen_harmonyOs',
+          'os': 'harmonyOs'
         },
         extraData: requestOptions.extraData
       });
@@ -55,7 +56,8 @@ export class HttpCore {
         header: {
           'Content-Type': 'application/json',
           'Authorization': token,
-          'client_type': 'zen_harmonyOs'
+          'client_type': 'zen_harmonyOs',
+          'os': 'harmonyOs'
         },
         extraData: requestOptions.extraData
       });

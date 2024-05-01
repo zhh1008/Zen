@@ -9,7 +9,6 @@ export class CommonUtils {
     }
     TextPickerDialog.show({
       range: sexArray,
-      // selected: 0,
       value: defaultValue,
       onAccept: (result: TextPickerResult) => {
         sexCallback(result.value);

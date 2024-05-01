@@ -1,5 +1,4 @@
 
-import StringUtils from '../common/utils/StringUtils';
 @Observed
 export class UserDto {
   constructor(jsonData?: any) {
@@ -16,7 +15,7 @@ export class UserDto {
       this.mobile = jsonData['mobile'];
       this.status = jsonData['status'];
       this.userIdCreate = jsonData['userIdCreate'];
-      this.sex = StringUtils.convertSexByCode(jsonData['sex']);
+      this.sex = jsonData['sex'];
       this.birth = jsonData['birth'];
       this.liveAddress = jsonData['liveAddress'];
       this.province = jsonData['province'];
