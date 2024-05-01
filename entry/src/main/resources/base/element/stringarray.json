@@ -1,0 +1,15 @@
+{
+  "strarray": [
+    {
+      "name": "sex_array",
+      "value": [
+        {
+          "value": "男"
+        },
+        {
+          "value": "女"
+        }
+      ]
+    }
+  ]
+}

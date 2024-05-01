@@ -225,9 +225,12 @@ export class CommonConstants {
   /**
    * Mine page url.
    */
+  static readonly EMPLOYEE_INFO_PAGE_URL: string = 'pages/EmployeeInfoPage';
+
+  /**
+   * Mine page url.
+   */
   static readonly WORK_TYPE_LIST_PAGE_URL: string = 'pages/WorkTypeListPage';
-
-
 
   /**
    * Percent of the text input.

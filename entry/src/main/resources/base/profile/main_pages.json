@@ -4,6 +4,7 @@
     "pages/RegisterPage",
     "pages/PrivacyPage",
     "pages/CompanyInfoPage",
+    "pages/EmployeeInfoPage",
     "pages/WorkTypeListPage"
   ]
 }
